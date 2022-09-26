@@ -48,35 +48,9 @@ def compute_statistics(path, params, apply_fn, batch_size=1, img_size=256):
         mu, sigma = stats["mu"], stats["sigma"]
         return mu, sigma
 
-    # images = []
-    # for f in tqdm(os.listdir(path), ncols=0):
-    #     img = Image.open(os.path.join(path, f))
-    #     # convert if only a single channel
-    #     if img.mode == "L":
-    #         img = img.convert("RGB")
-    #     # resize if not the right size
-    #     if img_size is not None and img.size[:2] != (img_size, img_size):
-    #         img = img.resize(
-    #             size=(img_size, img_size),
-    #             resample=Image.BILINEAR,
-    #         )
-    #     img = np.array(img) / 255.0
-    #     images.append(img)
-
-    # num_batches = int(len(images) // batch_size)
-    # act = []
-    # for i in tqdm(range(num_batches), ncols=0):
-    #     x = images[i * batch_size : i * batch_size + batch_size]
-    #     x = np.asarray(x)
-    #     x = 2 * x - 1
-    #     pred = apply_fn(params, jax.lax.stop_gradient(x))
-    #     act.append(pred.squeeze(axis=1).squeeze(axis=1))
-    # act = jnp.concatenate(act, axis=0)
-
-
     dataloader = torch.utils.data.DataLoader(
         ImageFolderDataset(path=path, img_size=img_size),
-        batch_size=batch_size, num_workers=4, drop_last=True,
+        batch_size=batch_size, num_workers=8, drop_last=True,
         collate_fn=lambda x: np.stack(x, axis=0)
     )
     def dataloader_iterator():
